@@ -45,7 +45,7 @@ class Chain:
 
 
 # A function which determines if the proposed link is valid, or whether it needs to override another
-def validate_added_link(newinfo):
+def validate_added_link(newinfo: str) -> bool:
     if len(newinfo.split()) != 2 or newinfo.split()[0] == newinfo.split()[1]:
         print("Invalid input\n")
         return False
@@ -60,7 +60,7 @@ def validate_added_link(newinfo):
 
     if newinfo.split()[0] in assassins:
         if newinfo.split()[1] in targets:
-            print(f"CONFLICT:\n Assassin and Target already exist\n")
+            print("CONFLICT:\n Assassin and Target already exist\n")
             return False
         else:
             ans = input(
@@ -96,7 +96,7 @@ def validate_added_link(newinfo):
     return True
 
 
-def add():
+def add() -> None:
     newinfo = input(
         'Enter new information in the form of "A B", where A is the assassin and B is the target:\n'
     ).lower()
@@ -107,21 +107,21 @@ def add():
     ui()
 
 
-def num_of_possible_loops():
+def num_of_possible_loops() -> int:
     # TODO: Determine the number of chains then use formula (n-1)!
     return "x"
 
 
 # UI
-def ui_view_links():
+def ui_view_links() -> None:
     input(f"{get_info()}")
 
 
-def ui_view_chains():
+def ui_view_chains() -> None:
     info = get_info()
 
 
-def ui_view_loops():
+def ui_view_loops() -> None:
     if num_of_possible_loops() > 20:
         print(f"There are {num_of_possible_loops()} possible loops, continue? y/n")
         ans = input().lower()
@@ -129,7 +129,7 @@ def ui_view_loops():
             return
 
 
-def ui_view():
+def ui_view() -> None:
     a = input(
         "1: View all chains\n2: Print all possible loops\n3: View all links\n4: Exit\n"
     )
@@ -147,7 +147,7 @@ def ui_view():
     ui_view()
 
 
-def ui():
+def ui() -> None:
     a = input("1: Add information\n2: View information\n3: Save and Exit\n")
 
     if a == "1":
@@ -163,7 +163,7 @@ def ui():
         ui()
 
 
-def get_info():
+def get_info() -> list[tuple[str, str]]:
     return [
         (line.split()[0], line.split()[1]) for line in open(info_file, "r").readlines()
     ]
