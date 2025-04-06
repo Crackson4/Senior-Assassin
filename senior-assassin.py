@@ -3,6 +3,7 @@ import numpy as np
 
 class Loop:
     def __init__(self, n: int, links: list[tuple[int, int]]):
+        # TODO: Implement error checking
         self.length = n
         self.links = links
 
@@ -16,6 +17,7 @@ class Loop:
         self.link_matrix = np.full((self.length, self.length), -1, dtype="i, i")
 
     def strike_row_and_column(self, x: int, y: int) -> None:
+        # TODO: Implement error checking
         self.bool_matrix[y, :] = False
         self.bool_matrix[:, x] = False
         self.bool_matrix[y, x] = True
