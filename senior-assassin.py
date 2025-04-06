@@ -21,6 +21,7 @@ class Loop:
         self.bool_matrix[y, x] = True
 
     def get_possible_loops(self) -> list[tuple[int, int]]:
+        # TODO: Provide an explanation for this function
         if len(self.links) == self.length:
             return self.links
 
@@ -37,10 +38,17 @@ class Loop:
             if not self.bool_matrix[i, y]:
                 continue
 
+            # TODO: Consider the case when (y, i) is already a link
+
+            # TODO: Prevent multiple loops from happening
+
             new_loop = Loop(self.length, self.links + [(y, i)])
             loops += new_loop.get_possible_loops()
 
         return loops
+
+
+# TODO: Create a function that return the number of possible loops
 
 
 def main():
