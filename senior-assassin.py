@@ -44,58 +44,62 @@ class Chain:
         self.links = self.nodes_to_links(self.nodes)
 
 
+def override(index: int):
+    file = open(info_file, "r")
+    overridden = file.readlines()
+    file.close()
+    overridden.remove(overridden[index + 1])
+
+    # Re-write the file, ommitting the overridden link
+    _file = open("./info.txt", "w")
+    _file.writelines(overridden)
+    _file.close()
+
+
 # A function which determines if the proposed link is valid, or whether it needs to override another
 def validate_added_link(newinfo):
+    # Initial syntax check
     if len(newinfo.split()) != 2 or newinfo.split()[0] == newinfo.split()[1]:
-        print("Invalid input\n")
+        print("Invalid input: Ensure the input is in the form 'A B'\n")
+        return False
+    # Checking if the players exist
+    elif newinfo.split()[0] not in players or newinfo.split()[1] not in players:
+        print(
+            f"Invalid input: {newinfo.split()[0] if newinfo.split()[0] not in players else newinfo.split()[1]} is not a player\n"
+        )
         return False
 
+    # Converts the known links into lists of assassins and targets, with respective indices
     assassins, targets = [], []
     file = open(info_file, "r")
-
-    for i in file.readlines()[1:]:
+    for i in file.readlines()[1:]:  # First line of info.txt is a list of all players
         assassins.append(i.split()[0])
         targets.append(i.split()[1])
     file.close()
 
-    if newinfo.split()[0] in assassins:
-        if newinfo.split()[1] in targets:
-            print(f"CONFLICT:\n Assassin and Target already exist\n")
-            return False
-        else:
-            ans = input(
-                f"CONFLICT:\n{newinfo.split()[0]}'s target is {targets[assassins.index(newinfo.split()[0])]}\nOverride? y/n\n"
-            ).lower()
-            if ans != "y":
-                return False
-            file = open(info_file, "r")
-            overridden = file.readlines()
-            file.close()
-            print(overridden)
-            print(newinfo.split()[0] + "\n")
-            overridden.remove(overridden[assassins.index(newinfo.split()[0]) + 1])
-
-            _file = open("./info.txt", "w")
-            _file.writelines(overridden)
-            _file.close()
-    if newinfo.split()[1] in targets:
+    if newinfo.split()[0] in assassins and newinfo.split()[1] in targets:
+        print(f"CONFLICT:\n Link already exist\n")
+        return False
+    elif newinfo.split()[0] in assassins:
         ans = input(
-            f"CONFLICT:\n{newinfo.split()[1]}'s assassin is {assassins[targets.index(newinfo.split()[1])]}\nOverride? y/n\n"
+            f"CONFLICT:\n{newinfo.split()[0]}'s target is {targets[assassins.index(newinfo.split()[0])]}.\nOverride? y/n\n"
         ).lower()
         if ans != "y":
             return False
-        overridden = open(info_file, "r").readlines()
-        overridden.remove(overridden[targets.index(newinfo.split()[0]) + 1])
-
-        _file = open("./info.txt", "w")
-        _file.writelines(overridden)
-        _file.close()
+        override(assassins.index(newinfo.split()[0]))
+    elif newinfo.split()[1] in targets:
+        ans = input(
+            f"CONFLICT:\n{newinfo.split()[1]}'s assassin is {assassins[targets.index(newinfo.split()[1])]}.\nOverride? y/n\n"
+        ).lower()
+        if ans != "y":
+            return False
+        override(targets.index(newinfo.split()[1]))
 
     print("Validated successfully\n")
-
     return True
 
 
+# After the user inputs a new link, it is validated then appended to info.txt
 def add():
     newinfo = input(
         'Enter new information in the form of "A B", where A is the assassin and B is the target:\n'
