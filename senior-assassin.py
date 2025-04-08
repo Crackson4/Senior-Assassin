@@ -1,3 +1,6 @@
+import math
+
+
 class Loop:
     def __init__(self, n: int, links: list[tuple[int, int]]):
         # TODO: Implement error checking
@@ -42,14 +45,15 @@ class Loop:
 
         self.loops.append([last_link] + links)
 
-
-# TODO: Create a function that return the number of possible loops
+    def number_of_loops(self) -> int:
+        return math.factorial(self.length - len(self.links) - 1)
 
 
 def main():
+    # Debugging
     my_loop = Loop(5, [(0, 1), (2, 3)])
 
-    print(my_loop.loops)
+    print(my_loop.number_of_loops())
 
 
 if __name__ == "__main__":
