@@ -1,62 +1,55 @@
-import numpy as np
-
-
 class Loop:
     def __init__(self, n: int, links: list[tuple[int, int]]):
         # TODO: Implement error checking
         self.length = n
         self.links = links
+        self.loops: list[list[tuple[int, int]]] = []
 
-        # Map of possible locations for links
-        self.bool_matrix = np.ones((self.length, self.length), dtype=bool)
+        self.get_possible_loops(self.links)
 
-        for link in self.links:
-            self.strike_row_and_column(*link)
-
-        # Map of links
-        self.link_matrix = np.full((self.length, self.length), -1, dtype="i, i")
-
-    def strike_row_and_column(self, x: int, y: int) -> None:
-        # TODO: Implement error checking
-        self.bool_matrix[y, :] = False
-        self.bool_matrix[:, x] = False
-        self.bool_matrix[y, x] = True
-
-    def get_possible_loops(self) -> list[tuple[int, int]]:
+    def get_possible_loops(self, links: list[tuple[int, int]]) -> None:
         # TODO: Provide an explanation for this function
-        if len(self.links) == self.length:
-            return self.links
 
-        for x, y in self.links:
-            self.strike_row_and_column(x, y)
+        # TODO: Debug function
 
-        link = self.links[0]
-        while link != (-1, -1):
-            link = self.link_matrix[link[1], link[0]]
+        # TODO: Implement error checking
 
-        loops = []
+        x, y = links[0]
+
+        eliminated_columns = set()
+        eliminated_rows = {x}
+
+        for p, q in links:
+            eliminated_columns.add(p)
+            eliminated_rows.add(q)
 
         for i in range(self.length):
-            if not self.bool_matrix[i, y]:
+            if i == y or i in eliminated_rows:
                 continue
 
-            # TODO: Consider the case when (y, i) is already a link
+            # TODO: Consider when the new_link is already in links
+            new_link = (y, i)
+            self.get_possible_loops([new_link] + links)
 
-            # TODO: Prevent multiple loops from happening
+        if len(links) < self.length - 1:
+            return
 
-            new_loop = Loop(self.length, self.links + [(y, i)])
-            loops += new_loop.get_possible_loops()
+        total = self.length * (self.length - 1) // 2
+        last_link = (
+            total - sum(eliminated_columns),
+            total - sum(eliminated_rows),
+        )
 
-        return loops
+        self.loops.append([last_link] + links)
 
 
 # TODO: Create a function that return the number of possible loops
 
 
 def main():
-    loop = Loop(5, [(0, 1), (2, 3)])
+    my_loop = Loop(5, [(0, 1), (2, 3)])
 
-    print(loop.links)
+    print(my_loop.loops)
 
 
 if __name__ == "__main__":
