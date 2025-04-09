@@ -130,7 +130,7 @@ def ui_view_chains() -> None:
 
 
 def ui_view_loops() -> None:
-    if num_of_possible_loops() > 20:
+    if num_of_possible_loops() > 24:
         print(f"There are {num_of_possible_loops()} possible loops, continue? y/n")
         ans = input().lower()
         if ans != "y":
@@ -145,7 +145,7 @@ def ui_view() -> None:
     if a == "1":
         ui_view_chains()
     elif a == "2":
-        num_of_possible_loops()
+        ui_view_loops()
     elif a == "3":
         ui()
     elif a == "4":
