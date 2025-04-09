@@ -8,52 +8,56 @@ class Loop:
         self.links = links
         self.loops: list[list[tuple[int, int]]] = []
 
-        self.get_possible_loops(self.links)
+        eliminated_rows = [y for _, y in self.links]
+        self.get_possible_loops([self.links[0]], eliminated_rows)
 
-    def get_possible_loops(self, links: list[tuple[int, int]]) -> None:
-        # TODO: Provide an explanation for this function
+    def number_of_loops(self) -> int:
+        return math.factorial(self.length - len(self.links) - 1)
+
+    def get_possible_loops(
+        self, curr_loop: list[tuple[int, int]], eliminated_rows: list[int]
+    ) -> None:
+        """
+        Calculates all possible loops containing the given links.
+
+        Args:
+            curr_loop (list[tuple[int, int]]): The current state of the loop.
+            eliminated_rows (list[int]): The rows that already contain links.
+        """
+
+        # TODO: Provide a detailed explanation for this function
 
         # TODO: Debug function
 
         # TODO: Implement error checking
 
-        x, y = links[0]
+        # If all connections have been explored, add the last link and return the loop
+        if len(curr_loop) == self.length - 1:
+            total = self.length * (self.length - 1) // 2
+            last_link = (
+                total - sum(x for x, _ in curr_loop),
+                total - sum(y for _, y in curr_loop),
+            )
+            self.loops.append([last_link] + curr_loop)
+            return
 
-        eliminated_columns = set()
-        eliminated_rows = {x}
+        _, y = curr_loop[-1]
 
-        for p, q in links:
-            eliminated_columns.add(p)
-            eliminated_rows.add(q)
-
+        # Explore all possible connections from the current node
         for i in range(self.length):
             if i == y or i in eliminated_rows:
                 continue
 
-            # TODO: Consider when the new_link is already in links
+            # Add a link and recursively explore the next node
             new_link = (y, i)
-            self.get_possible_loops([new_link] + links)
-
-        if len(links) < self.length - 1:
-            return
-
-        total = self.length * (self.length - 1) // 2
-        last_link = (
-            total - sum(eliminated_columns),
-            total - sum(eliminated_rows),
-        )
-
-        self.loops.append([last_link] + links)
-
-    def number_of_loops(self) -> int:
-        return math.factorial(self.length - len(self.links) - 1)
+            self.get_possible_loops(curr_loop + [new_link], eliminated_rows + [i])
 
 
 def main():
     # Debugging
     my_loop = Loop(5, [(0, 1), (2, 3)])
 
-    print(my_loop.number_of_loops())
+    print(my_loop.loops)
 
 
 if __name__ == "__main__":
