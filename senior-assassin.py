@@ -51,37 +51,6 @@ class Loop:
 
         self.loops.append([last_link] + links)
 
-    def nodes_to_links(self, nodes: list[Node]) -> list[tuple]:
-        """
-        Args:
-            nodes (list[Node]): A chain in the form (A, B, C, ...).
-
-        Returns:
-            list[tuple]: A chain in the form [(A, B), (B, C), ...].
-        """
-
-        return [(nodes[i], nodes[i + 1]) for i in range(len(nodes) - 1)]
-
-    def links_to_nodes(self, links: list[tuple]) -> list[Node]:
-        """
-        Args:
-            links (list[tuple]): A chain in the form [(A, B), (B, C), ...].
-
-        Returns:
-            list[Node]: A chain in the form (A, B, C, ...).
-        """
-
-        return [link[0] for link in links] + [links[-1][1]]
-
-    def get_values(self):
-        return [node.value for node in self.nodes]
-
-    def update_nodes(self):
-        self.nodes = self.links_to_nodes(self.links)
-
-    def update_links(self):
-        self.links = self.nodes_to_links(self.nodes)
-
 
 def override(index: int):
     file = open(info_file, "r")
