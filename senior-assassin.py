@@ -1,5 +1,4 @@
 info_file = "./info.txt"
-players = open(info_file, "r").readline(1).split()
 
 
 class Node:
@@ -62,9 +61,12 @@ def validate_added_link(newinfo: str) -> bool:
         print("Invalid input: Ensure the input is in the form 'A B'\n")
         return False
     # Checking if the players exist
-    elif newinfo.split()[0] not in players or newinfo.split()[1] not in players:
+    elif (
+        newinfo.split()[0] not in get_all_players()
+        or newinfo.split()[1] not in get_all_players()
+    ):
         print(
-            f"Invalid input: {newinfo.split()[0] if newinfo.split()[0] not in players else newinfo.split()[1]} is not a player\n"
+            f"Invalid input: {newinfo.split()[0] if newinfo.split()[0] not in get_all_players() else newinfo.split()[1]} is not a player\n"
         )
         return False
 
@@ -175,6 +177,13 @@ def input_chain() -> Chain:
     values = input("Type a list of names (separated by spaces):\n").split()
 
     return Chain(values)
+
+
+def get_all_players() -> list[str]:
+    _infofile = open(info_file, "r")
+    players = _infofile.readlines()[0]
+    _infofile.close()
+    return players.split()
 
 
 def main():
