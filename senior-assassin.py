@@ -120,11 +120,6 @@ def add() -> None:
     ui()
 
 
-def num_of_possible_loops() -> int:
-    # TODO: Determine the number of chains then use formula (n-1)!
-    return "x"
-
-
 # UI
 def ui_view_links() -> None:
     input(f"{get_info()}")
@@ -182,12 +177,6 @@ def get_info() -> list[tuple[str, str]]:
     ]
 
 
-def input_chain() -> Chain:
-    values = input("Type a list of names (separated by spaces):\n").split()
-
-    return Chain(values)
-
-
 def get_all_players() -> list[str]:
     _infofile = open(info_file, "r")
     players = _infofile.readlines()[0]
@@ -196,8 +185,6 @@ def get_all_players() -> list[str]:
 
 
 def main():
-    # Debugging
-    my_loop = Loop(5, [(0, 1), (2, 3)])
     # Debugging
     my_loop = Loop(5, [(0, 1), (2, 3)])
 
