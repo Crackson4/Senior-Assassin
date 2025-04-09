@@ -1,55 +1,59 @@
-class Node:
-    def __init__(self, value: str):
-        self.value = value
+import math
 
 
-class Chain:
-    def __init__(self, values: list[str]):
-        self.nodes = [Node(value) for value in values]
-        self.links = self.nodes_to_links(self.nodes)
+class Loop:
+    def __init__(self, n: int, links: list[tuple[int, int]]):
+        # TODO: Implement error checking
+        self.length = n
+        self.links = links
+        self.loops: list[list[tuple[int, int]]] = []
 
-    def nodes_to_links(self, nodes: list[Node]) -> list[tuple]:
-        """
-        Args:
-            nodes (list[Node]): A chain in the form (A, B, C, ...).
+        self.get_possible_loops(self.links)
 
-        Returns:
-            list[tuple]: A chain in the form [(A, B), (B, C), ...].
-        """
+    def get_possible_loops(self, links: list[tuple[int, int]]) -> None:
+        # TODO: Provide an explanation for this function
 
-        return [(nodes[i], nodes[i + 1]) for i in range(len(nodes) - 1)]
+        # TODO: Debug function
 
-    def links_to_nodes(self, links: list[tuple]) -> list[Node]:
-        """
-        Args:
-            links (list[tuple]): A chain in the form [(A, B), (B, C), ...].
+        # TODO: Implement error checking
 
-        Returns:
-            list[Node]: A chain in the form (A, B, C, ...).
-        """
+        x, y = links[0]
 
-        return [link[0] for link in links] + [links[-1][1]]
+        eliminated_columns = set()
+        eliminated_rows = {x}
 
-    def get_values(self):
-        return [node.value for node in self.nodes]
+        for p, q in links:
+            eliminated_columns.add(p)
+            eliminated_rows.add(q)
 
-    def update_nodes(self):
-        self.nodes = self.links_to_nodes(self.links)
+        for i in range(self.length):
+            if i == y or i in eliminated_rows:
+                continue
 
-    def update_links(self):
-        self.links = self.nodes_to_links(self.nodes)
+            # TODO: Consider when the new_link is already in links
+            new_link = (y, i)
+            self.get_possible_loops([new_link] + links)
 
+        if len(links) < self.length - 1:
+            return
 
-def input_chain() -> Chain:
-    values = input("Type a list of names (separated by spaces):\n").split()
+        total = self.length * (self.length - 1) // 2
+        last_link = (
+            total - sum(eliminated_columns),
+            total - sum(eliminated_rows),
+        )
 
-    return Chain(values)
+        self.loops.append([last_link] + links)
+
+    def number_of_loops(self) -> int:
+        return math.factorial(self.length - len(self.links) - 1)
 
 
 def main():
-    chain = Chain(["1", "2", "3", "4"])
+    # Debugging
+    my_loop = Loop(5, [(0, 1), (2, 3)])
 
-    print(chain.get_values())
+    print(my_loop.number_of_loops())
 
 
 if __name__ == "__main__":
