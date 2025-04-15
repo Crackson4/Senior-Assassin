@@ -72,7 +72,7 @@ class UI:
 
         self.player_dict = {self.players[i]: i for i in range(len(self.players))}
 
-    def prompt(self, message: str, default_yes: bool) -> bool:
+    def prompt(self, message: str, default_yes=False) -> bool:
         response = input(message)
 
         if default_yes:
@@ -89,8 +89,8 @@ class UI:
     def remove_link(self, link: tuple[str, str]) -> None:
         self.links.remove(link)
 
+    # TODO: Allow user input in referencing function
     def add_link(self, link: tuple[str, str]) -> None:
-        # TODO: Allow user input in referencing function
         self.validate_link(link)
         self.links.append(link)
 
@@ -121,15 +121,13 @@ class UI:
         target_dict = {link[1]: link for link in self.links}
 
         if x in assassin_dict:
-            if not self.prompt(
-                f"Conflict: {x} already has a target.\nOverride? [y/N] "
-            ):
+            if not self.prompt(f"{x} already has a target. Override? [y/N] "):
                 raise ValueError(f"{x} already has a target")
 
             self.remove_link(assassin_dict[x])
 
         if y in target_dict:
-            if not self.prompt(f"Conflict: {y} is already a target.\nOverride? [y/N] "):
+            if not self.prompt(f"{y} is already a target. Override? [y/N] "):
                 raise ValueError(f"{y} is already a target")
 
             self.remove_link(target_dict[y])
@@ -201,10 +199,13 @@ def get_all_players() -> list[str]:
 
 def main():
     # Debugging
-    my_loop = Loop(5, [(0, 1), (2, 3)])
     ui = UI()
 
-    print(ui.players, ui.links, ui.loop.links, sep="\n")
+    print("Players:", ui.players, sep="\t")
+
+    for link in [("b", "c"), ("h", "d"), ("b", "d")]:
+        ui.add_link(link)
+        print("Links:\t", ui.links, sep="\t")
 
 
 if __name__ == "__main__":
