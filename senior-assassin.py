@@ -62,7 +62,7 @@ class Loop:
 
 
 class UI:
-    def __init__(self):
+    def __init__(self) -> None:
         file = open(info_file, "r")
         data = file.readlines()
         file.close()
@@ -74,20 +74,14 @@ class UI:
 
         self.loop = Loop(
             len(self.players),
-            [(self.player_dict[x], self.player_dict[y]) for x, y in self.links],
+            [self.link_string_to_int(link) for link in self.links],
         )
 
+    def link_string_to_int(self, link: tuple[str, str]) -> tuple[int, int]:
+        return self.player_dict[link[0]], self.player_dict[link[1]]
 
-def override(index: int):
-    file = open(info_file, "r")
-    overridden = file.readlines()
-    file.close()
-    overridden.remove(overridden[index + 1])
-
-    # Re-write the file, ommitting the overridden link
-    _file = open("./info.txt", "w")
-    _file.writelines(overridden)
-    _file.close()
+    def link_int_to_string(self, link: tuple[int, int]) -> tuple[str, str]:
+        return self.players[link[0]], self.players[link[1]]
 
 
 # A function which determines if the proposed link is valid, or whether it needs to override another
