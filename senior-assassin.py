@@ -5,7 +5,7 @@ info_file = "./info.txt"
 
 
 class Loop:
-    def __init__(self, n: int, links: list[tuple[int, int]]):
+    def __init__(self, n: int, links: list[tuple[int, int]]) -> None:
         # TODO: Implement error checking
         self.length = n
         self.links = links
@@ -72,16 +72,19 @@ class UI:
 
         self.player_dict = {self.players[i]: i for i in range(len(self.players))}
 
-        self.loop = Loop(
-            len(self.players),
-            [self.link_string_to_int(link) for link in self.links],
-        )
-
     def link_string_to_int(self, link: tuple[str, str]) -> tuple[int, int]:
         return self.player_dict[link[0]], self.player_dict[link[1]]
 
     def link_int_to_string(self, link: tuple[int, int]) -> tuple[str, str]:
         return self.players[link[0]], self.players[link[1]]
+
+    def remove_link(self, link: tuple[str, str]) -> None:
+        self.links.remove(link)
+
+    def add_link(self, link: tuple[str, str]) -> None:
+        # TODO: Allow user input in referencing function
+        if validate_added_link(link):
+            self.links.append(link)
 
 
 # A function which determines if the proposed link is valid, or whether it needs to override another
@@ -127,17 +130,6 @@ def validate_added_link(newinfo: str) -> bool:
 
     print("Validated successfully\n")
     return True
-
-
-def add() -> None:
-    newinfo = input(
-        'Enter new information in the form of "A B", where A is the assassin and B is the target:\n'
-    ).lower()
-    if validate_added_link(newinfo):
-        file = open(info_file, "a")
-        file.write(newinfo + "\n")
-        file.close()
-    ui()
 
 
 # UI
