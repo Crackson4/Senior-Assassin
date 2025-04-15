@@ -1,4 +1,5 @@
 import math
+from typing import Callable
 
 
 info_file = "./info.txt"
@@ -71,6 +72,20 @@ class UI:
         self.links = [tuple(line.split()) for line in data[1:]]
 
         self.player_dict = {self.players[i]: i for i in range(len(self.players))}
+
+    def prompt(
+        self, message: str, callback: Callable, error_callback: Callable
+    ) -> None:
+        if not callable(callback):
+            raise TypeError("Callback must be a function")
+        if not callable(error_callback):
+            raise TypeError("Error callback must be a function")
+
+        response = input(message)
+        if response.lower() == "y":
+            callback()
+        else:
+            error_callback()
 
     def link_string_to_int(self, link: tuple[str, str]) -> tuple[int, int]:
         return self.player_dict[link[0]], self.player_dict[link[1]]
