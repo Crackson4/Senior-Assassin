@@ -91,56 +91,46 @@ class UI:
 
     def add_link(self, link: tuple[str, str]) -> None:
         # TODO: Allow user input in referencing function
-        if validate_added_link(link):
-            self.links.append(link)
+        self.validate_link(link)
+        self.links.append(link)
 
     def replace_link(self, link: tuple[str, str], new_link: tuple[str, str]) -> None:
         self.remove_link(link)
         self.add_link(new_link)
 
-# A function which determines if the proposed link is valid, or whether it needs to override another
-def validate_added_link(newinfo: str) -> bool:
-    if len(newinfo.split()) != 2 or newinfo.split()[0] == newinfo.split()[1]:
-        print("Invalid input: Ensure the input is in the form 'A B'\n")
-        return False
-    # Checking if the players exist
-    elif (
-        newinfo.split()[0] not in get_all_players()
-        or newinfo.split()[1] not in get_all_players()
-    ):
-        print(
-            f"Invalid input: {newinfo.split()[0] if newinfo.split()[0] not in get_all_players() else newinfo.split()[1]} is not a player\n"
-        )
-        return False
+    # A function which determines if the proposed link is valid, or whether it needs to override another
+    def validate_link(self, link: tuple[str, str]) -> None:
+        # Checking that the link is in the correct format
+        if len(link) != 2 or link[0] == link[1]:
+            raise ValueError("Ensure the input is in the form 'name_1 name_2'")
 
-    # Converts the known links into lists of assassins and targets, with respective indices
-    assassins, targets = [], []
-    file = open(info_file, "r")
-    for i in file.readlines()[1:]:  # First line of info.txt is a list of all players
-        assassins.append(i.split()[0])
-        targets.append(i.split()[1])
-    file.close()
+        x, y = link
 
-    if newinfo.split()[0] in assassins and newinfo.split()[1] in targets:
-        print("CONFLICT:\n Link already exist\n")
-        return False
-    elif newinfo.split()[0] in assassins:
-        ans = input(
-            f"CONFLICT:\n{newinfo.split()[0]}'s target is {targets[assassins.index(newinfo.split()[0])]}.\nOverride? y/n\n"
-        ).lower()
-        if ans != "y":
-            return False
-        override(assassins.index(newinfo.split()[0]))
-    elif newinfo.split()[1] in targets:
-        ans = input(
-            f"CONFLICT:\n{newinfo.split()[1]}'s assassin is {assassins[targets.index(newinfo.split()[1])]}.\nOverride? y/n\n"
-        ).lower()
-        if ans != "y":
-            return False
-        override(targets.index(newinfo.split()[1]))
+        # Checking if the players exist
+        if x not in self.players:
+            raise ValueError(f"{x} is not a player")
+        if y not in self.players:
+            raise ValueError(f"{y} is not a player")
 
-    print("Validated successfully\n")
-    return True
+        # Checking if the link already exists
+        if link in self.links:
+            raise ValueError("Link already exists")
+
+        # Converts the known links into lists of assassins and targets, with respective indices
+        assassin_dict = {link[0]: link for link in self.links}
+        target_dict = {link[1]: link for link in self.links}
+
+        if x in assassin_dict:
+            if self.prompt(f"Conflict: {x} already has a target.\nOverride? [y/N] "):
+                self.replace_link(assassin_dict[x], link)
+
+            raise ValueError(f"{x} already has a target")
+
+        if y in target_dict:
+            if self.prompt(f"Conflict: {y} is already a target.\nOverride? [y/N] "):
+                self.replace_link(target_dict[y], link)
+
+            raise ValueError(f"{y} is already a target")
 
 
 # UI
