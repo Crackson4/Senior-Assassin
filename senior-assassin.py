@@ -121,16 +121,18 @@ class UI:
         target_dict = {link[1]: link for link in self.links}
 
         if x in assassin_dict:
-            if self.prompt(f"Conflict: {x} already has a target.\nOverride? [y/N] "):
-                self.replace_link(assassin_dict[x], link)
+            if not self.prompt(
+                f"Conflict: {x} already has a target.\nOverride? [y/N] "
+            ):
+                raise ValueError(f"{x} already has a target")
 
-            raise ValueError(f"{x} already has a target")
+            self.remove_link(assassin_dict[x])
 
         if y in target_dict:
-            if self.prompt(f"Conflict: {y} is already a target.\nOverride? [y/N] "):
-                self.replace_link(target_dict[y], link)
+            if not self.prompt(f"Conflict: {y} is already a target.\nOverride? [y/N] "):
+                raise ValueError(f"{y} is already a target")
 
-            raise ValueError(f"{y} is already a target")
+            self.remove_link(target_dict[y])
 
 
 # UI
