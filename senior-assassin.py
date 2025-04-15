@@ -61,6 +61,23 @@ class Loop:
             self.get_possible_loops(curr_loop + [new_link], eliminated_rows)
 
 
+class UI:
+    def __init__(self):
+        file = open(info_file, "r")
+        data = file.readlines()
+        file.close()
+
+        self.players = data[0].split()
+        self.links = [tuple(line.split()) for line in data[1:]]
+
+        self.player_dict = {self.players[i]: i for i in range(len(self.players))}
+
+        self.loop = Loop(
+            len(self.players),
+            [(self.player_dict[x], self.player_dict[y]) for x, y in self.links],
+        )
+
+
 def override(index: int):
     file = open(info_file, "r")
     overridden = file.readlines()
@@ -196,10 +213,9 @@ def get_all_players() -> list[str]:
 def main():
     # Debugging
     my_loop = Loop(5, [(0, 1), (2, 3)])
+    ui = UI()
 
-    print(my_loop.loops)
-    ui()
-    exit()
+    print(ui.players, ui.links, ui.loop.links, sep="\n")
 
 
 if __name__ == "__main__":
