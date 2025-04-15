@@ -86,6 +86,9 @@ class UI:
         if validate_added_link(link):
             self.links.append(link)
 
+    def replace_link(self, link: tuple[str, str], new_link: tuple[str, str]) -> None:
+        self.remove_link(link)
+        self.add_link(new_link)
 
 # A function which determines if the proposed link is valid, or whether it needs to override another
 def validate_added_link(newinfo: str) -> bool:
