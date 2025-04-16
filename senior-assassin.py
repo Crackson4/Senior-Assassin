@@ -104,6 +104,7 @@ class UI:
         self.add_link(new_link)
 
     # A function which determines if the proposed link is valid, or whether it needs to override another
+    # TODO: Replace ValueErrors with regular prints
     def validate_link(self, link: tuple[str, str]) -> None:
         # Checking that the link is in the correct format
         if len(link) != 2 or link[0] == link[1]:
@@ -161,6 +162,7 @@ class UI:
                 sep=" ",
             )
 
+    # TODO: Clean up output of UI methods
     def ui_home(self) -> None:
         while True:
             choice = input(
