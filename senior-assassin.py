@@ -158,6 +158,25 @@ class UI:
                 sep=" ",
             )
 
+    def ui_home(self) -> None:
+        while True:
+            choice = input(
+                "1: Edit information\n2: View information\n3: Save and Exit\n"
+            )
+
+            if not (choice.isdigit() and 1 <= int(choice) <= 3):
+                print("Invalid input: Input must be a number between 1 and 3")
+                continue
+
+            if choice == "1":
+                self.ui_edit()
+
+            if choice == "2":
+                self.ui_view()
+
+            if choice == "3":
+                self.save_info()
+
     def ui_edit(self) -> None:
         while True:
             choice = input("1: Add link\n2: Remove link\n3: Replace link\n4: Back\n")
@@ -223,7 +242,7 @@ class UI:
 def main():
     # Debugging
     ui = UI()
-    ui.print_loops()
+    ui.ui_home()
 
 
 if __name__ == "__main__":
