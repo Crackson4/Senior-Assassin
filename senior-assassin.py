@@ -132,18 +132,29 @@ class UI:
 
             self.remove_link(target_dict[y])
 
+    def print_links(self) -> None:
+        for link in self.links:
+            print(f"{link[0]} -> {link[1]}")
+
     def print_loops(self) -> None:
-        loop = Loop(
+        loop_solver = Loop(
             len(self.players), [self.link_string_to_int(link) for link in self.links]
         )
 
-        n = loop.number_of_loops()
+        n = loop_solver.number_of_loops()
 
         if n > 24:
             if not self.prompt(f"There are {n} possible loops. Continue? [y/N]"):
                 return
 
-        print(*loop.loops, sep="\n")
+        for loop in loop_solver.loops:
+            print(
+                (
+                    f"{link[0]} -> {link[1]}"
+                    for link in map(self.link_int_to_string, loop)
+                ),
+                sep=" ",
+            )
 
 
 # TODO: Appropriate the rest of the UI functions
@@ -189,12 +200,7 @@ def ui() -> None:
 def main():
     # Debugging
     ui = UI()
-
-    print("Players:", ui.players, sep="\t")
-
-    for link in [("b", "c"), ("h", "d"), ("b", "d")]:
-        ui.add_link(link)
-        print("Links:\t", ui.links, sep="\t")
+    ui.print_loops()
 
 
 if __name__ == "__main__":
