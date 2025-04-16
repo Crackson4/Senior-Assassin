@@ -87,9 +87,12 @@ class UI:
         return self.players[link[0]], self.players[link[1]]
 
     def remove_link(self, link: tuple[str, str]) -> None:
+        if link not in self.links:
+            print("Invalid input: Link does not exist")
+            return
+
         self.links.remove(link)
 
-    # TODO: Allow user input in referencing function
     def add_link(self, link: tuple[str, str]) -> None:
         self.validate_link(link)
         self.links.append(link)
