@@ -158,6 +158,40 @@ class UI:
                 sep=" ",
             )
 
+    def ui_edit(self) -> None:
+        while True:
+            choice = input("1: Add link\n2: Remove link\n3: Replace link\n4: Back\n")
+
+            if not (choice.isdigit() and 1 <= int(choice) <= 4):
+                print("Invalid input: Input must be a number between 1 and 4")
+                continue
+
+            if choice == "1":
+                user_input = input("Enter a link in the form 'name_1 name_2': ")
+                link = tuple(user_input.split())
+
+                self.add_link(link)
+
+            if choice == "2":
+                user_input = input("Enter a link in the form 'name_1 name_2': ")
+                link = tuple(user_input.split())
+
+                self.remove_link(link)
+
+            if choice == "3":
+                user_input_1 = input(
+                    "Enter the link to replace in the form 'name_1 name_2': "
+                )
+                user_input_2 = input("Enter a link in the form 'name_1 name_2': ")
+
+                old_link = tuple(user_input_1.split())
+                new_link = tuple(user_input_2.split())
+
+                self.replace_link(old_link, new_link)
+
+            if choice == "4":
+                break
+
     def ui_view(self) -> None:
         while True:
             choice = input("1: Current links\n2: Possible loops\n3: Back\n")
