@@ -158,6 +158,23 @@ class UI:
                 sep=" ",
             )
 
+    def ui_view(self) -> None:
+        while True:
+            choice = input("1: Current links\n2: Possible loops\n3: Back\n")
+
+            if not (choice.isdigit() and 1 <= int(choice) <= 3):
+                print("Invalid input: Input must be a number between 1 and 3")
+                continue
+
+            if choice == "1":
+                self.print_links()
+
+            if choice == "2":
+                self.print_loops()
+
+            if choice == "3":
+                break
+
     def save_info(self) -> None:
         file = open(info_file, "w")
 
