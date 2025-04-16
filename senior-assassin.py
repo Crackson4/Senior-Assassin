@@ -132,22 +132,24 @@ class UI:
 
             self.remove_link(target_dict[y])
 
+    def print_loops(self) -> None:
+        loop = Loop(
+            len(self.players), [self.link_string_to_int(link) for link in self.links]
+        )
+
+        n = loop.number_of_loops()
+
+        if n > 24:
+            if not self.prompt(f"There are {n} possible loops. Continue? [y/N]"):
+                return
+
+        print(*loop.loops, sep="\n")
+
+
+# TODO: Appropriate the rest of the UI functions
+
 
 # UI
-def ui_view_links() -> None:
-    input(f"{get_info()}")
-
-
-def ui_view_chains() -> None:
-    info = get_info()
-
-
-def ui_view_loops() -> None:
-    if num_of_possible_loops() > 24:
-        print(f"There are {num_of_possible_loops()} possible loops, continue? y/n")
-        ans = input().lower()
-        if ans != "y":
-            return
 
 
 def ui_view() -> None:
@@ -182,19 +184,6 @@ def ui() -> None:
     else:
         print("Invalid input")
         ui()
-
-
-def get_info() -> list[tuple[str, str]]:
-    return [
-        (line.split()[0], line.split()[1]) for line in open(info_file, "r").readlines()
-    ]
-
-
-def get_all_players() -> list[str]:
-    _infofile = open(info_file, "r")
-    players = _infofile.readlines()[0]
-    _infofile.close()
-    return players.split()
 
 
 def main():
