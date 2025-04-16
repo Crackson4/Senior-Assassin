@@ -5,7 +5,7 @@ info_file = "./info.txt"
 
 
 class Loop:
-    def __init__(self, n: int, links: list[tuple[int, int]]):
+    def __init__(self, n: int, links: list[tuple[int, int]]) -> None:
         # TODO: Implement error checking
         self.length = n
         self.links = links
@@ -61,145 +61,193 @@ class Loop:
             self.get_possible_loops(curr_loop + [new_link], eliminated_rows)
 
 
-def override(index: int):
-    file = open(info_file, "r")
-    overridden = file.readlines()
-    file.close()
-    overridden.remove(overridden[index + 1])
-
-    # Re-write the file, ommitting the overridden link
-    _file = open("./info.txt", "w")
-    _file.writelines(overridden)
-    _file.close()
-
-
-# A function which determines if the proposed link is valid, or whether it needs to override another
-def validate_added_link(newinfo: str) -> bool:
-    if len(newinfo.split()) != 2 or newinfo.split()[0] == newinfo.split()[1]:
-        print("Invalid input: Ensure the input is in the form 'A B'\n")
-        return False
-    # Checking if the players exist
-    elif (
-        newinfo.split()[0] not in get_all_players()
-        or newinfo.split()[1] not in get_all_players()
-    ):
-        print(
-            f"Invalid input: {newinfo.split()[0] if newinfo.split()[0] not in get_all_players() else newinfo.split()[1]} is not a player\n"
-        )
-        return False
-
-    # Converts the known links into lists of assassins and targets, with respective indices
-    assassins, targets = [], []
-    file = open(info_file, "r")
-    for i in file.readlines()[1:]:  # First line of info.txt is a list of all players
-        assassins.append(i.split()[0])
-        targets.append(i.split()[1])
-    file.close()
-
-    if newinfo.split()[0] in assassins and newinfo.split()[1] in targets:
-        print("CONFLICT:\n Link already exist\n")
-        return False
-    elif newinfo.split()[0] in assassins:
-        ans = input(
-            f"CONFLICT:\n{newinfo.split()[0]}'s target is {targets[assassins.index(newinfo.split()[0])]}.\nOverride? y/n\n"
-        ).lower()
-        if ans != "y":
-            return False
-        override(assassins.index(newinfo.split()[0]))
-    elif newinfo.split()[1] in targets:
-        ans = input(
-            f"CONFLICT:\n{newinfo.split()[1]}'s assassin is {assassins[targets.index(newinfo.split()[1])]}.\nOverride? y/n\n"
-        ).lower()
-        if ans != "y":
-            return False
-        override(targets.index(newinfo.split()[1]))
-
-    print("Validated successfully\n")
-    return True
-
-
-def add() -> None:
-    newinfo = input(
-        'Enter new information in the form of "A B", where A is the assassin and B is the target:\n'
-    ).lower()
-    if validate_added_link(newinfo):
-        file = open(info_file, "a")
-        file.write(newinfo + "\n")
+class UI:
+    def __init__(self) -> None:
+        file = open(info_file, "r")
+        data = file.readlines()
         file.close()
-    ui()
 
+        self.players = data[0].split()
+        self.links = [tuple(line.split()) for line in data[1:]]
 
-# UI
-def ui_view_links() -> None:
-    input(f"{get_info()}")
+        self.player_dict = {self.players[i]: i for i in range(len(self.players))}
 
+    def prompt(self, message: str, default_yes=False) -> bool:
+        response = input(message)
 
-def ui_view_chains() -> None:
-    info = get_info()
+        if default_yes:
+            return response.lower() != "n"
 
+        return response.lower() == "y"
 
-def ui_view_loops() -> None:
-    if num_of_possible_loops() > 24:
-        print(f"There are {num_of_possible_loops()} possible loops, continue? y/n")
-        ans = input().lower()
-        if ans != "y":
+    def link_string_to_int(self, link: tuple[str, str]) -> tuple[int, int]:
+        return self.player_dict[link[0]], self.player_dict[link[1]]
+
+    def link_int_to_string(self, link: tuple[int, int]) -> tuple[str, str]:
+        return self.players[link[0]], self.players[link[1]]
+
+    def remove_link(self, link: tuple[str, str]) -> None:
+        if link not in self.links:
+            print("Invalid input: Link does not exist")
             return
 
+        self.links.remove(link)
 
-def ui_view() -> None:
-    a = input(
-        "1: View all chains\n2: Print all possible loops\n3: View all links\n4: Exit\n"
-    )
+    def add_link(self, link: tuple[str, str]) -> None:
+        self.validate_link(link)
+        self.links.append(link)
 
-    if a == "1":
-        ui_view_chains()
-    elif a == "2":
-        ui_view_loops()
-    elif a == "3":
-        ui()
-    elif a == "4":
-        return
-    else:
-        print("Invalid input")
-    ui_view()
+    def replace_link(
+        self, old_link: tuple[str, str], new_link: tuple[str, str]
+    ) -> None:
+        self.remove_link(old_link)
+        self.add_link(new_link)
 
+    # A function which determines if the proposed link is valid, or whether it needs to override another
+    # TODO: Replace ValueErrors with regular prints
+    def validate_link(self, link: tuple[str, str]) -> None:
+        # Checking that the link is in the correct format
+        if len(link) != 2 or link[0] == link[1]:
+            raise ValueError("Ensure the input is in the form 'name_1 name_2'")
 
-def ui() -> None:
-    a = input("1: Add information\n2: View information\n3: Save and Exit\n")
+        x, y = link
 
-    if a == "1":
-        print("\nADD INFORMATION\n\n")
-        add()
-    elif a == "2":
-        print("\nVIEW INFORMATION\n\n")
-        ui_view()
-    elif a == "3":
-        return
-    else:
-        print("Invalid input")
-        ui()
+        # Checking if the players exist
+        if x not in self.players:
+            raise ValueError(f"{x} is not a player")
+        if y not in self.players:
+            raise ValueError(f"{y} is not a player")
 
+        # Checking if the link already exists
+        if link in self.links:
+            raise ValueError("Link already exists")
 
-def get_info() -> list[tuple[str, str]]:
-    return [
-        (line.split()[0], line.split()[1]) for line in open(info_file, "r").readlines()
-    ]
+        # Converts the known links into lists of assassins and targets, with respective indices
+        assassin_dict = {link[0]: link for link in self.links}
+        target_dict = {link[1]: link for link in self.links}
 
+        if x in assassin_dict:
+            if not self.prompt(f"{x} already has a target. Override? [y/N] "):
+                raise ValueError(f"{x} already has a target")
 
-def get_all_players() -> list[str]:
-    _infofile = open(info_file, "r")
-    players = _infofile.readlines()[0]
-    _infofile.close()
-    return players.split()
+            self.remove_link(assassin_dict[x])
+
+        if y in target_dict:
+            if not self.prompt(f"{y} is already a target. Override? [y/N] "):
+                raise ValueError(f"{y} is already a target")
+
+            self.remove_link(target_dict[y])
+
+    def print_links(self) -> None:
+        for link in self.links:
+            print(f"{link[0]} -> {link[1]}")
+
+    def print_loops(self) -> None:
+        loop_solver = Loop(
+            len(self.players), [self.link_string_to_int(link) for link in self.links]
+        )
+
+        n = loop_solver.number_of_loops()
+
+        if n > 24:
+            if not self.prompt(f"There are {n} possible loops. Continue? [y/N]"):
+                return
+
+        for loop in loop_solver.loops:
+            print(
+                (
+                    f"{link[0]} -> {link[1]}"
+                    for link in map(self.link_int_to_string, loop)
+                ),
+                sep=" ",
+            )
+
+    # TODO: Clean up output of UI methods
+    def ui_home(self) -> None:
+        while True:
+            choice = input(
+                "1: Edit information\n2: View information\n3: Save and Exit\n"
+            )
+
+            if not (choice.isdigit() and 1 <= int(choice) <= 3):
+                print("Invalid input: Input must be a number between 1 and 3")
+                continue
+
+            if choice == "1":
+                self.ui_edit()
+
+            if choice == "2":
+                self.ui_view()
+
+            if choice == "3":
+                self.save_info()
+
+    def ui_edit(self) -> None:
+        while True:
+            choice = input("1: Add link\n2: Remove link\n3: Replace link\n4: Back\n")
+
+            if not (choice.isdigit() and 1 <= int(choice) <= 4):
+                print("Invalid input: Input must be a number between 1 and 4")
+                continue
+
+            if choice == "1":
+                user_input = input("Enter a link in the form 'name_1 name_2': ")
+                link = tuple(user_input.split())
+
+                self.add_link(link)
+
+            if choice == "2":
+                user_input = input("Enter a link in the form 'name_1 name_2': ")
+                link = tuple(user_input.split())
+
+                self.remove_link(link)
+
+            if choice == "3":
+                user_input_1 = input(
+                    "Enter the link to replace in the form 'name_1 name_2': "
+                )
+                user_input_2 = input("Enter a link in the form 'name_1 name_2': ")
+
+                old_link = tuple(user_input_1.split())
+                new_link = tuple(user_input_2.split())
+
+                self.replace_link(old_link, new_link)
+
+            if choice == "4":
+                break
+
+    def ui_view(self) -> None:
+        while True:
+            choice = input("1: Current links\n2: Possible loops\n3: Back\n")
+
+            if not (choice.isdigit() and 1 <= int(choice) <= 3):
+                print("Invalid input: Input must be a number between 1 and 3")
+                continue
+
+            if choice == "1":
+                self.print_links()
+
+            if choice == "2":
+                self.print_loops()
+
+            if choice == "3":
+                break
+
+    def save_info(self) -> None:
+        file = open(info_file, "w")
+
+        file.write(" ".join(self.players) + "\n")
+        file.writelines([" ".join(link) + "\n" for link in self.links])
+
+        file.close()
+
+        exit(0)
 
 
 def main():
     # Debugging
-    my_loop = Loop(5, [(0, 1), (2, 3)])
-
-    print(my_loop.loops)
-    ui()
-    exit()
+    ui = UI()
+    ui.ui_home()
 
 
 if __name__ == "__main__":
