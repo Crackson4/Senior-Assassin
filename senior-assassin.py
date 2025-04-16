@@ -158,45 +158,15 @@ class UI:
                 sep=" ",
             )
 
+    def save_info(self) -> None:
+        file = open(info_file, "w")
 
-# TODO: Appropriate the rest of the UI functions
+        file.write(" ".join(self.players) + "\n")
+        file.writelines([" ".join(link) + "\n" for link in self.links])
 
+        file.close()
 
-# UI
-
-
-def ui_view() -> None:
-    a = input(
-        "1: View all chains\n2: Print all possible loops\n3: View all links\n4: Exit\n"
-    )
-
-    if a == "1":
-        ui_view_chains()
-    elif a == "2":
-        ui_view_loops()
-    elif a == "3":
-        ui()
-    elif a == "4":
-        return
-    else:
-        print("Invalid input")
-    ui_view()
-
-
-def ui() -> None:
-    a = input("1: Add information\n2: View information\n3: Save and Exit\n")
-
-    if a == "1":
-        print("\nADD INFORMATION\n\n")
-        add()
-    elif a == "2":
-        print("\nVIEW INFORMATION\n\n")
-        ui_view()
-    elif a == "3":
-        return
-    else:
-        print("Invalid input")
-        ui()
+        exit(0)
 
 
 def main():
