@@ -67,6 +67,12 @@ class UI:
         data = file.readlines()
         file.close()
 
+        self.players: list[str] = []
+        self.links: list[tuple[str, str]] = []
+        self.player_dict: dict[str, int] = {}
+
+        if data == []:
+            return
         self.players = data[0].split()
         self.links = [tuple(line.split()) for line in data[1:]]
 
@@ -109,6 +115,8 @@ class UI:
         # Checking that the link is in the correct format
         if len(link) != 2 or link[0] == link[1]:
             raise ValueError("Ensure the input is in the form 'name_1 name_2'")
+        if self.players == []:
+            return
 
         x, y = link
 
