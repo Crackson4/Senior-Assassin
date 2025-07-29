@@ -73,10 +73,13 @@ class UI:
 
         if data == []:
             return
+
         self.players = data[0].split()
         self.links = [tuple(line.split()) for line in data[1:]]
 
-        self.player_dict = {self.players[i]: i for i in range(len(self.players))}
+        self.player_dict = {
+            self.players[i]: i for i in range(len(self.players))
+        }
 
     def prompt(self, message: str, default_yes=False) -> bool:
         response = input(message)
@@ -115,6 +118,7 @@ class UI:
         # Checking that the link is in the correct format
         if len(link) != 2 or link[0] == link[1]:
             raise ValueError("Ensure the input is in the form 'name_1 name_2'")
+
         if self.players == []:
             return
 
@@ -152,13 +156,16 @@ class UI:
 
     def print_loops(self) -> None:
         loop_solver = Loop(
-            len(self.players), [self.link_string_to_int(link) for link in self.links]
+            len(self.players),
+            [self.link_string_to_int(link) for link in self.links],
         )
 
         n = loop_solver.number_of_loops()
 
         if n > 24:
-            if not self.prompt(f"There are {n} possible loops. Continue? [y/N]"):
+            if not self.prompt(
+                f"There are {n} possible loops. Continue? [y/N]"
+            ):
                 return
 
         for loop in loop_solver.loops:
@@ -192,7 +199,9 @@ class UI:
 
     def ui_edit(self) -> None:
         while True:
-            choice = input("1: Add link\n2: Remove link\n3: Replace link\n4: Back\n")
+            choice = input(
+                "1: Add link\n2: Remove link\n3: Replace link\n4: Back\n"
+            )
 
             if not (choice.isdigit() and 1 <= int(choice) <= 4):
                 print("Invalid input: Input must be a number between 1 and 4")
@@ -214,7 +223,9 @@ class UI:
                 user_input_1 = input(
                     "Enter the link to replace in the form 'name_1 name_2': "
                 )
-                user_input_2 = input("Enter a link in the form 'name_1 name_2': ")
+                user_input_2 = input(
+                    "Enter a link in the form 'name_1 name_2': "
+                )
 
                 old_link = tuple(user_input_1.split())
                 new_link = tuple(user_input_2.split())
