@@ -31,8 +31,6 @@ class Loop:
 
         # TODO: Provide a detailed explanation for this function
 
-        # TODO: Debug function
-
         # TODO: Implement error checking
 
         # If all connections have been explored, add the last link and return the loop
