@@ -7,8 +7,10 @@ info_file = "./info.txt"
 class Loop:
     def __init__(self, n: int, links: list[tuple[int, int]]) -> None:
         # TODO: Implement error checking
+
         self.length = n
         self.links = links
+        self.links_dict = {link[0]: link[1] for link in self.links}
         self.loops: list[list[tuple[int, int]]] = []
 
     def number_of_loops(self) -> int:
@@ -48,13 +50,24 @@ class Loop:
 
             return
 
-        # Explore all possible connections from the current node
+        # Check if the next link is already known
+
+        if y in self.links_dict:
+            n = self.links_dict[y]
+            new_link = (y, n)
+            self.update_possible_loops(
+                curr_loop + [(y, n)], eliminated_rows.union({n})
+            )
+
+            return
+
+        # Explore all possible connections from the current link
 
         for i in range(self.length):
             if i == y or i in eliminated_rows:
                 continue
 
-            # Add a link and recursively explore the next node
+            # Add a link and recursively explore the next links
 
             new_link = (y, i)
             self.update_possible_loops(
@@ -115,6 +128,7 @@ class UI:
 
     # A function which determines if the proposed link is valid, or whether it needs to override another
     # TODO: Replace ValueErrors with regular prints
+
     def validate_link(self, link: tuple[str, str]) -> None:
         # Checking that the link is in the correct format
         if len(link) != 2 or link[0] == link[1]:
@@ -185,6 +199,7 @@ class UI:
             )
 
     # TODO: Clean up output of UI methods
+
     def ui_home(self) -> None:
         while True:
             choice = input(
@@ -271,7 +286,6 @@ class UI:
 
 
 def main():
-    # Debugging
     ui = UI()
     ui.ui_home()
 
