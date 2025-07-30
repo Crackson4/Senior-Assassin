@@ -29,8 +29,6 @@ class Loop:
 
         # TODO: Provide a detailed explanation for this function
 
-        # TODO: Debug function so that all known links are preserved
-
         # TODO: Implement error checking
 
         _, y = curr_loop[-1]
@@ -119,12 +117,6 @@ class UI:
     def add_link(self, link: tuple[str, str]) -> None:
         self.validate_link(link)
         self.links.append(link)
-
-    def replace_link(
-        self, old_link: tuple[str, str], new_link: tuple[str, str]
-    ) -> None:
-        self.remove_link(old_link)
-        self.add_link(new_link)
 
     # A function which determines if the proposed link is valid, or whether it needs to override another
     # TODO: Replace ValueErrors with regular prints
@@ -219,11 +211,11 @@ class UI:
             if choice == "3":
                 self.save_info()
 
+    # TODO: Enable the user to add nodes
+
     def ui_edit(self) -> None:
         while True:
-            choice = input(
-                "1: Add link\n2: Remove link\n3: Replace link\n4: Back\n"
-            )
+            choice = input("1: Add link\n2: Remove link\n3: Back\n")
 
             if not (choice.isdigit() and 1 <= int(choice) <= 4):
                 print("Invalid input: Input must be a number between 1 and 4")
@@ -235,6 +227,8 @@ class UI:
 
                 self.add_link(link)
 
+            # TODO: Display known links above prompt
+
             if choice == "2":
                 user_input = input("Enter a link in the form 'name_1 name_2': ")
                 link = tuple(user_input.split())
@@ -242,19 +236,6 @@ class UI:
                 self.remove_link(link)
 
             if choice == "3":
-                user_input_1 = input(
-                    "Enter the link to replace in the form 'name_1 name_2': "
-                )
-                user_input_2 = input(
-                    "Enter a link in the form 'name_1 name_2': "
-                )
-
-                old_link = tuple(user_input_1.split())
-                new_link = tuple(user_input_2.split())
-
-                self.replace_link(old_link, new_link)
-
-            if choice == "4":
                 break
 
     def ui_view(self) -> None:
