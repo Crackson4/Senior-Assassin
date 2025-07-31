@@ -7,18 +7,16 @@ info_file = "./info.txt"
 class Loop:
     def __init__(self, n: int, links: list[tuple[int, int]]) -> None:
         # TODO: Implement error checking
+
         self.length = n
         self.links = links
+        self.links_dict = {link[0]: link[1] for link in self.links}
         self.loops: list[list[tuple[int, int]]] = []
-
-        eliminated_rows = set(y for _, y in self.links)
-        eliminated_rows.add(self.links[0][0])
-        self.get_possible_loops([self.links[0]], eliminated_rows)
 
     def number_of_loops(self) -> int:
         return math.factorial(self.length - len(self.links) - 1)
 
-    def get_possible_loops(
+    def update_possible_loops(
         self, curr_loop: list[tuple[int, int]], eliminated_rows: set[int]
     ) -> None:
         """
@@ -31,32 +29,50 @@ class Loop:
 
         # TODO: Provide a detailed explanation for this function
 
+        # TODO: Debug function so that all known links are preserved
+
         # TODO: Implement error checking
-
-        # If all connections have been explored, add the last link and return the loop
-
-        if len(curr_loop) == self.length - 1:
-            total = self.length * (self.length - 1) // 2
-            last_link = (
-                total - sum(x for x, _ in curr_loop),
-                total - sum(y for _, y in curr_loop),
-            )
-            self.loops.append(curr_loop + [last_link])
-            return
 
         _, y = curr_loop[-1]
 
-        # Explore all possible connections from the current node
+        # If all connections have been explored, add the last link and return the loop
+
+        if len(curr_loop) == self.length - 2:
+            n = self.length * (self.length - 1) // 2
+            last_row = (
+                n - sum([link[0] for link in curr_loop]) - curr_loop[-1][1]
+            )
+
+            curr_loop.append((y, last_row))
+            curr_loop.append((last_row, curr_loop[0][0]))
+
+            self.loops.append(curr_loop)
+
+            return
+
+        # Check if the next link is already known
+
+        if y in self.links_dict:
+            n = self.links_dict[y]
+            new_link = (y, n)
+            self.update_possible_loops(
+                curr_loop + [(y, n)], eliminated_rows.union({n})
+            )
+
+            return
+
+        # Explore all possible connections from the current link
 
         for i in range(self.length):
             if i == y or i in eliminated_rows:
                 continue
 
-            # Add a link and recursively explore the next node
+            # Add a link and recursively explore the next links
 
             new_link = (y, i)
-            eliminated_rows.add(i)
-            self.get_possible_loops(curr_loop + [new_link], eliminated_rows)
+            self.update_possible_loops(
+                curr_loop + [new_link], eliminated_rows.union({i})
+            )
 
 
 class UI:
@@ -148,12 +164,12 @@ class UI:
             print(f"{link[0]} -> {link[1]}")
 
     def print_loops(self) -> None:
-        loop_solver = Loop(
+        loop_finder = Loop(
             len(self.players),
             [self.link_string_to_int(link) for link in self.links],
         )
 
-        n = loop_solver.number_of_loops()
+        n = loop_finder.number_of_loops()
 
         if n > 24:
             if not self.prompt(
@@ -161,16 +177,23 @@ class UI:
             ):
                 return
 
-        for loop in loop_solver.loops:
+        eliminated_rows = set(y for _, y in loop_finder.links)
+        eliminated_rows.add(loop_finder.links[0][0])
+
+        loop_finder.update_possible_loops(
+            [loop_finder.links[0]], eliminated_rows
+        )
+
+        for loop in loop_finder.loops:
             print(
-                (
-                    f"{link[0]} -> {link[1]}"
+                "\t".join(
+                    f"{link[0]} -> {link[1]} "
                     for link in map(self.link_int_to_string, loop)
-                ),
-                sep=" ",
+                )
             )
 
     # TODO: Clean up output of UI methods
+
     def ui_home(self) -> None:
         while True:
             choice = input(
@@ -246,7 +269,6 @@ class UI:
 
 
 def main():
-    # Debugging
     ui = UI()
     ui.ui_home()
 
