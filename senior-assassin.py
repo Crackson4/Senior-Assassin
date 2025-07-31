@@ -167,7 +167,7 @@ class UI:
 
         if n > 24:
             if not self.prompt(
-                f"There are {n} possible loops. Continue? [y/N]"
+                f"There are {n} possible loops. Continue? [y/N] "
             ):
                 return
 
@@ -190,9 +190,7 @@ class UI:
 
     def ui_home(self) -> None:
         while True:
-            choice = input(
-                "1: Edit information\n2: View information\n3: Save and Exit\n"
-            )
+            choice = input("1: Edit\n2: View\n3: Exit\n")
 
             if not (choice.isdigit() and 1 <= int(choice) <= 3):
                 print("Invalid input: Input must be a number between 1 and 3")
@@ -205,7 +203,10 @@ class UI:
                 self.ui_view()
 
             if choice == "3":
-                self.save_info()
+                if self.prompt("Save changes? [Y/n] ", True):
+                    self.save_info()
+
+                exit(0)
 
     # TODO: Enable the user to add nodes
 
@@ -258,8 +259,6 @@ class UI:
         file.writelines([" ".join(link) + "\n" for link in self.links])
 
         file.close()
-
-        exit(0)
 
 
 def main():
