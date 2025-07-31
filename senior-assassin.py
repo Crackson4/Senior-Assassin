@@ -79,19 +79,15 @@ class UI:
         data = file.readlines()
         file.close()
 
-        self.players: list[str] = []
-        self.links: list[tuple[str, str]] = []
-        self.player_dict: dict[str, int] = {}
-
-        if data == []:
-            return
-
-        self.players = data[0].split()
-        self.links = [tuple(line.split()) for line in data[1:]]
+        self.players = data[0].split() if data else []
 
         self.player_dict = {
             self.players[i]: i for i in range(len(self.players))
         }
+
+        self.links = (
+            [tuple(line.split()) for line in data[1:]] if len(data) > 1 else []
+        )
 
     def prompt(self, message: str, default_yes=False) -> bool:
         response = input(message)
