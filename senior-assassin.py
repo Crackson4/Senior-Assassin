@@ -39,9 +39,7 @@ class Loop:
 
         if len(curr_loop) == self.length - 2:
             n = self.length * (self.length - 1) // 2
-            last_row = (
-                n - sum([link[0] for link in curr_loop]) - curr_loop[-1][1]
-            )
+            last_row = n - sum([link[0] for link in curr_loop]) - curr_loop[-1][1]
 
             curr_loop.append((y, last_row))
             curr_loop.append((last_row, curr_loop[0][0]))
@@ -55,9 +53,7 @@ class Loop:
         if y in self.links_dict:
             n = self.links_dict[y]
             new_link = (y, n)
-            self.update_possible_loops(
-                curr_loop + [(y, n)], eliminated_rows.union({n})
-            )
+            self.update_possible_loops(curr_loop + [(y, n)], eliminated_rows.union({n}))
 
             return
 
@@ -83,13 +79,9 @@ class UI:
 
         self.players = data[0].split() if data else []
 
-        self.player_dict = {
-            self.players[i]: i for i in range(len(self.players))
-        }
+        self.player_dict = {self.players[i]: i for i in range(len(self.players))}
 
-        self.links = (
-            [tuple(line.split()) for line in data[1:]] if len(data) > 1 else []
-        )
+        self.links = [tuple(line.split()) for line in data[1:]] if len(data) > 1 else []
 
     def prompt(self, message: str, default_yes=False) -> bool:
         response = input(message)
@@ -117,12 +109,11 @@ class UI:
         self.links.append(link)
 
     # A function which determines if the proposed link is valid, or whether it needs to override another
-    # TODO: Replace ValueErrors with regular prints
 
     def validate_link(self, link: tuple[str, str]) -> None:
         # Checking that the link is in the correct format
         if len(link) != 2 or link[0] == link[1]:
-            raise ValueError("Ensure the input is in the form 'name_1 name_2'")
+            return print("Ensure the input is in the form 'name_1 name_2'")
 
         if self.players == []:
             return
@@ -131,13 +122,13 @@ class UI:
 
         # Checking if the players exist
         if x not in self.players:
-            raise ValueError(f"{x} is not a player")
+            return print(f"{x} is not a player")
         if y not in self.players:
-            raise ValueError(f"{y} is not a player")
+            return print(f"{y} is not a player")
 
         # Checking if the link already exists
         if link in self.links:
-            raise ValueError("Link already exists")
+            return print("Link already exists")
 
         # Converts the known links into lists of assassins and targets, with respective indices
         assassin_dict = {link[0]: link for link in self.links}
@@ -145,13 +136,13 @@ class UI:
 
         if x in assassin_dict:
             if not self.prompt(f"{x} already has a target. Override? [y/N] "):
-                raise ValueError(f"{x} already has a target")
+                return print(f"{x} already has a target")
 
             self.remove_link(assassin_dict[x])
 
         if y in target_dict:
             if not self.prompt(f"{y} is already a target. Override? [y/N] "):
-                raise ValueError(f"{y} is already a target")
+                return print(f"{y} is already a target")
 
             self.remove_link(target_dict[y])
 
@@ -168,17 +159,13 @@ class UI:
         n = loop_finder.number_of_loops()
 
         if n > 24:
-            if not self.prompt(
-                f"There are {n} possible loops. Continue? [y/N]"
-            ):
+            if not self.prompt(f"There are {n} possible loops. Continue? [y/N]"):
                 return
 
         eliminated_rows = set(y for _, y in loop_finder.links)
         eliminated_rows.add(loop_finder.links[0][0])
 
-        loop_finder.update_possible_loops(
-            [loop_finder.links[0]], eliminated_rows
-        )
+        loop_finder.update_possible_loops([loop_finder.links[0]], eliminated_rows)
 
         for loop in loop_finder.loops:
             print(
